@@ -16,6 +16,8 @@ import UserLogin from "./pages/UserLogin";
 import UserSignUp from "./pages/UserSignUp";
 import LawyerLogin from "./pages/LawyerLogin";
 import LawyerSignUp from "./pages/LawyerSignUp";
+import LawyerVerification from "./pages/LawyerVerification"; 
+import TimerPage from "./pages/TimerPage"; 
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -64,6 +66,24 @@ const App = () => {
           element={
             <LawyerProtectWrapper>
               <LawyerHome />
+            </LawyerProtectWrapper>
+          }
+        />
+
+        <Route
+          path="/lawyerverification"
+          element={
+            <LawyerProtectWrapper>
+              <LawyerVerification />
+            </LawyerProtectWrapper>
+          }
+        />
+
+        <Route
+          path="/timerpage"
+          element={
+            <LawyerProtectWrapper>
+              <TimerPage />
             </LawyerProtectWrapper>
           }
         />
