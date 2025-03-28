@@ -1,5 +1,6 @@
 const lawyerModel = require("../models/lawyer.model");
 const lawyerService = require("../services/lawyer.service");
+const LawyerVerification = require("../models/lawyerVerification.model");
 const blackListTokenModel = require("../models/blacklistToken.model");
 const { validationResult } = require("express-validator");
 
@@ -87,5 +88,28 @@ module.exports.logoutLawyer = async (req, res) => {
   } catch (error) {
     console.error("Logout error:", error);
     res.status(500).json({ message: "Logout failed due to server error" });
+  }
+};
+
+module.exports.submitVerification = async (req, res) => {
+  try {
+      const {
+          fullName, dateOfBirth, phone, email, address, barLicenseNumber,
+          stateRegistration, licenseIssued, licenseExpiry, lawFirm, lawSchool,
+          graduationYear, experience, specialization, bio, references, documentUrl
+      } = req.body;
+
+      const lawyerVerification = await LawyerVerification.create({
+          userId: req.lawyer._id,
+          fullName, dateOfBirth, phone, email, address, barLicenseNumber,
+          stateRegistration, licenseIssued, licenseExpiry, lawFirm, lawSchool,
+          graduationYear, experience, specialization, bio, references, documentUrl,
+          status: "pending"
+      });
+
+      res.status(201).json({ message: "Verification submitted successfully", lawyerVerification });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Verification failed" });
   }
 };

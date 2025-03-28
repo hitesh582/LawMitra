@@ -24,6 +24,10 @@ router.get('/profile', authMiddleware.authLawyer, lawyerController.getLawyerProf
 
 router.get('/logout', authMiddleware.authLawyer, lawyerController.logoutLawyer)
 
-
+router.post(
+    '/submit-verification',
+    authMiddleware.authLawyer,
+    lawyerController.submitVerification
+);
 
 module.exports = router;
