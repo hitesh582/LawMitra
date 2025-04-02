@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const connectToDb = require("./db/db");
 const userRoutes = require("./routes/user.routes");
 const lawyerRoutes = require("./routes/lawyer.routes");
+const adminRoutes = require("./routes/admin.routes");
 const mongoose = require('mongoose');
 
 const ImageKit = require("imagekit");
@@ -206,6 +207,7 @@ app.delete("/api/chats/:id", authUser, async (req, res) => {
   }
 });
 
+app.use("/admin", adminRoutes);
 
 // Global error handler for unauthorized access
 app.use((err, req, res, next) => {
