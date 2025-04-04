@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl } from "../App";
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const LawyerVerifications = ({ token }) => {
   const [verifications, setVerifications] = useState([]);

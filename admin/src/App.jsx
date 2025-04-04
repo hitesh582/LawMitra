@@ -8,9 +8,8 @@ import Orders from "./pages/Orders";
 import Login from "./components/Login";
 import LawyerVerifications from "./pages/LawyerVerifications.jsx";
 import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'
  
-export const backendUrl = import.meta.env.VITE_BACKEND_URL
+export const backendUrl = import.meta.env.VITE_API_URL;
 export const currency = '$'
 
 const App = () => {

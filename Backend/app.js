@@ -3,11 +3,11 @@ dotenv.config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
 const cookieParser = require("cookie-parser");
 const connectToDb = require("./db/db");
 const userRoutes = require("./routes/user.routes");
 const lawyerRoutes = require("./routes/lawyer.routes");
-const adminRoutes = require("./routes/admin.routes");
 const mongoose = require('mongoose');
 
 const ImageKit = require("imagekit");
@@ -20,10 +20,19 @@ const { authUser } = require("./middlewares/auth.middleware");
 
 connectToDb();
 
+
 app.use(cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman or curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -207,7 +216,7 @@ app.delete("/api/chats/:id", authUser, async (req, res) => {
   }
 });
 
-app.use("/admin", adminRoutes);
+
 
 // Global error handler for unauthorized access
 app.use((err, req, res, next) => {

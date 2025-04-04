@@ -2,6 +2,8 @@ const userModel = require("../models/user.model");
 const userService = require("../services/user.service");
 const { validationResult } = require("express-validator");
 const blackListTokenModel = require("../models/blacklistToken.model");
+const jwt = require('jsonwebtoken');
+
 
 module.exports.registerUser = async (req, res, next) => {
   const errors = validationResult(req);
@@ -85,3 +87,18 @@ module.exports.logoutUser = async (req, res) => {
     res.status(500).json({ message: "Logout failed due to server error" });
   }
 };
+
+
+module.exports.adminLogin = async (req, res) => {
+  try {
+      const {email, password} = req.body
+
+      if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
+          const token = jwt.sign(email+password, process.env.JWT_SECRET);
+          res.json({success:true, token})
+      }
+  } catch (error) {
+      console.log(error);
+      res.json({success:false, message:error.message})
+  }
+}
