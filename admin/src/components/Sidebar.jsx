@@ -31,9 +31,10 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          className="flex items-center gap-3 px-3 py-2 rounded"
+          className="flex items-center gap-3 border border-gray-300 vorder-r-0 px-3 py-2 rounded-1"
           to="/verifications"
         >
+          <img className="w-5 h-5" src={assets.order_icon} alt="" />
           <p>Lawyer Verifications</p>
         </NavLink>
       </div>
