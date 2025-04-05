@@ -7,6 +7,7 @@ import List from "./pages/List";
 import Orders from "./pages/Orders";
 import Login from "./components/Login";
 import LawyerVerifications from "./pages/LawyerVerifications.jsx";
+import ApprovedLawyers from "./pages/ApprovedLawyers.jsx";
 import {ToastContainer} from 'react-toastify';
  
 export const backendUrl = import.meta.env.VITE_API_URL;
@@ -36,6 +37,7 @@ const App = () => {
                 <Route path="/list" element={<List token={token} />} />
                 <Route path="/orders" element={<Orders token={token} />} />
                 <Route path="/verifications" element={<LawyerVerifications token={token} />} />
+                <Route path="/approved-lawyers" element={<ApprovedLawyers token={token} />} />
               </Routes>
             </div>
           </div>
