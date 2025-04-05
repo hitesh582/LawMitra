@@ -40,6 +40,7 @@ const App = () => {
                 <Route path="/verifications" element={<LawyerVerifications token={token} />} />
                 <Route path="/verifications/:id" element={<LawyerDetails token={token} />} />
                 <Route path="/approved-lawyers" element={<ApprovedLawyers token={token} />} />
+                <Route path="/approved-lawyers/:id" element={<LawyerDetails token={token} />} />
               </Routes>
             </div>
           </div>

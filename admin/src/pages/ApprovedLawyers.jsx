@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 
 const ApprovedLawyers = ({ token }) => {
@@ -44,6 +45,12 @@ const ApprovedLawyers = ({ token }) => {
               <strong>Phone:</strong> {lawyer.phone}
             </p>
             {/* Include additional details as required */}
+            <Link
+              to={`/approved-lawyers/${lawyer._id}`}
+              className="text-blue-500 hover:underline"
+            >
+              View Details
+            </Link>
           </div>
         ))
       )}
