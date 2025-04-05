@@ -24,6 +24,20 @@ router.get("/lawyer-approved", async (req, res) => {
   }
 });
 
+// Get single lawyer verification details
+router.get("/lawyer-verifications/:id", async (req, res) => {
+  try {
+    const verification = await LawyerVerification.findById(req.params.id);
+    if (!verification) {
+      return res.status(404).json({ success: false, message: "Verification not found" });
+    }
+    res.status(200).json({ success: true, verification });
+  } catch (err) {
+    console.error("Error fetching lawyer details:", err.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
+
 
 // Accept lawyer verification and send approval email
 router.post("/lawyer-verifications/:id/accept", async (req, res) => {

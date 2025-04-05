@@ -7,6 +7,7 @@ import List from "./pages/List";
 import Orders from "./pages/Orders";
 import Login from "./components/Login";
 import LawyerVerifications from "./pages/LawyerVerifications.jsx";
+import LawyerDetails from "./pages/LawyerDetails.jsx";
 import ApprovedLawyers from "./pages/ApprovedLawyers.jsx";
 import {ToastContainer} from 'react-toastify';
  
@@ -37,6 +38,7 @@ const App = () => {
                 <Route path="/list" element={<List token={token} />} />
                 <Route path="/orders" element={<Orders token={token} />} />
                 <Route path="/verifications" element={<LawyerVerifications token={token} />} />
+                <Route path="/verifications/:id" element={<LawyerDetails token={token} />} />
                 <Route path="/approved-lawyers" element={<ApprovedLawyers token={token} />} />
               </Routes>
             </div>

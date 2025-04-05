@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from 'react-toastify';
+import { Link } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -73,6 +74,10 @@ const LawyerVerifications = ({ token }) => {
             <p><strong>Name:</strong> {v.fullName}</p>
             <p><strong>Email:</strong> {v.email}</p>
             <p><strong>Phone:</strong> {v.phone}</p>
+            {/* Link to details page */}
+            <Link to={`/verifications/${v._id}`} className="text-blue-500 hover:underline">
+              View Details
+            </Link>
             {/* Add any other fields you want to display */}
             <div className="mt-2">
               <button
