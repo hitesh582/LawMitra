@@ -23,6 +23,28 @@ const ApprovedLawyers = ({ token }) => {
     }
   };
 
+  // New function to delete an approved lawyer
+  const deleteApprovedLawyer = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this lawyer?")) return;
+    try {
+      const res = await axios.delete(
+        `${backendUrl}/admin/lawyer-approved/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      if (res.data.success) {
+        toast.success(res.data.message);
+        // Refresh the list after deletion
+        fetchApprovedLawyers();
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     fetchApprovedLawyers();
   }, []);
@@ -51,6 +73,14 @@ const ApprovedLawyers = ({ token }) => {
             >
               View Details
             </Link>
+
+            {/* New Delete Button */}
+            <button
+              onClick={() => deleteApprovedLawyer(lawyer._id)}
+              className="bg-red-500 text-white px-4 py-1 rounded ml-10"
+            >
+              Delete
+            </button>
           </div>
         ))
       )}

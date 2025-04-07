@@ -99,4 +99,38 @@ router.delete("/lawyer-verifications/:id", async (req, res) => {
   }
 });
 
+// Delete an approved lawyer and send email notification
+router.delete("/lawyer-approved/:id", async (req, res) => {
+  try {
+    // Find the approved lawyer verification document by id
+    const verification = await LawyerVerification.findById(req.params.id);
+    if (!verification) {
+      return res.status(404).json({ success: false, message: "Approved lawyer not found" });
+    }
+    
+    // Send rejection email informing the lawyer they're no longer part of LawMitra
+    try {
+      await sendEmail({
+        to: verification.email,
+        subject: "Notice: Removal from LawMitra",
+        text: `Hello ${verification.fullName}, we regret to inform you that you will no longer be a part of LawMitra.`,
+        html: `<p>Hello <strong>${verification.fullName}</strong>,</p>
+               <p>We regret to inform you that you will no longer be a part of <strong>LawMitra</strong>.</p>`
+      });
+    } catch (emailErr) {
+      console.error("Email sending failed:", emailErr.message);
+      // Optionally, you can choose to return an error here or proceed with deletion.
+    }
+    
+    // Delete the lawyer's record from the database
+    await LawyerVerification.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: "Approved lawyer deleted successfully" });
+  } catch (err) {
+    console.error("Delete approved lawyer error:", err.message);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
+
+
+
 module.exports = router;
