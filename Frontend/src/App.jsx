@@ -33,6 +33,8 @@ import DashboardLayout from "./layouts/dashboardLayout";
 import DashboardPage from "./components/DashboardPage";
 import ChatPage from "./components/ChatPage";
 
+import LawyerRecommendation from "./pages/LawyerRecommendation";
+
 const App = () => {
   const location = useLocation();
 
@@ -138,6 +140,8 @@ const App = () => {
         <Route path="/privacypolicy" element={<PrivacyPolicy />} />
         <Route path="/safety" element={<Safety />} />
         <Route path="/termsofuse" element={<TermsOfUse />} />
+
+        <Route path="/recommendations" element={<LawyerRecommendation />} />
       </Routes>
       {!hideLayout && <Footer />}
     </div>
