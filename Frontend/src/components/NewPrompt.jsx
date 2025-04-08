@@ -124,11 +124,11 @@ const NewPrompt = ({ data }) => {
             />
           )}
           {/* {promptText && <div className="message user">{promptText}</div>} */}
-          {answer && (
+          {/* {answer && (
             <div className="message">
               <Markdown>{answer}</Markdown>
             </div>
-          )}
+          )} */}
           <div className="pb-[100px]" ref={endRef}></div>
 
           <form
