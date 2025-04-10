@@ -115,7 +115,7 @@ const LawyerRecommendation = () => {
         {recommendations.length === 0 ? (
           <p className="text-center text-gray-600">No recommendations to display.</p>
         ) : (
-          recommendations.map((lawyer) => (
+          recommendations.slice(0, 3).map((lawyer) => (
             <div key={lawyer._id || lawyer.id} className="bg-white p-6 rounded shadow mb-4">
               <h4 className="text-xl font-bold">{lawyer.fullName}</h4>
               <p><strong>Specialization:</strong> {lawyer.specialization}</p>

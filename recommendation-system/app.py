@@ -70,31 +70,41 @@ def compute_text_similarity(query, lawyers, field_names):
 
 def get_recommendations(filters):
     """
-    Generate recommendations by combining dynamic data from MongoDB and a
-    content-based scoring model.
+    Generate recommendations by combining data from MongoDB with a scoring model.
+    This version gives an explicit bonus if the lawyer's specialization exactly matches
+    the filter's specialization, making specialization the top priority.
     """
     lawyers = get_lawyers_from_db()
     if not lawyers:
         return []
 
-    # Build query text from filters (e.g., specialization, lawSchool)
+    # Build the query text from non-specialization fields for text similarity.
+    # We leave out "specialization" because we handle that separately.
     query_text = ""
-    if filters.get("specialization"):
-        query_text += filters["specialization"] + " "
     if filters.get("lawSchool"):
-        query_text += filters["lawSchool"]
-    # Extend query_text with additional fields as needed
+        query_text += filters["lawSchool"] + " "
+    if filters.get("bio"):
+        query_text += filters["bio"]
 
-    # Calculate text similarity on select fields
-    text_similarities = compute_text_similarity(query_text, lawyers, ["specialization", "lawSchool", "bio"])
-    
+    # Compute text similarity using selected fields (excluding specialization)
+    # If you still want to consider specialization text similarity, you can include it,
+    # but note that we also add an explicit bonus below.
+    text_similarities = compute_text_similarity(query_text, lawyers, ["lawSchool", "bio"])
+
     recommendations = []
     for idx, lawyer in enumerate(lawyers):
         score = 0
-        # Weight text similarity (adjust weight factor as necessary)
+
+        # Give a high priority bonus for exact specialization match.
+        # This bonus helps ensure a civil lawyer is ranked higher when 'civil' is requested.
+        if filters.get("specialization"):
+            if lawyer.get("specialization", "").strip().lower() == filters["specialization"].strip().lower():
+                score += 5  # Increase this bonus as needed
+
+        # Now factor in text similarity on other fields.
         score += text_similarities[idx] * 3
-        
-        # Numeric filters: Experience range
+
+        # Apply numeric filters for experience.
         try:
             exp = lawyer.get("experience", 0)
             if filters.get("minExperience"):
@@ -106,7 +116,7 @@ def get_recommendations(filters):
         except ValueError:
             pass
 
-        # Bonus for an exact match on graduation year
+        # Bonus for an exact match on graduation year.
         if filters.get("graduationYear"):
             try:
                 if lawyer.get("graduationYear") == int(filters["graduationYear"]):
@@ -116,9 +126,9 @@ def get_recommendations(filters):
 
         recommendations.append((lawyer, score))
 
-    # Sort recommendations by score (highest first) and return top 5
+    # Sort recommendations by score, highest first, and return the top 5 (or top 3 if preferred)
     recommendations.sort(key=lambda x: x[1], reverse=True)
-    return [rec[0] for rec in recommendations[:5]]
+    return [rec[0] for rec in recommendations[:3]]
 
 @app.route('/recommend', methods=['POST'])
 @cross_origin(origins=allowed_origins)
