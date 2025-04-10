@@ -2,9 +2,12 @@ from pymongo import MongoClient
 from faker import Faker
 from datetime import datetime, date, timedelta
 import random
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 # MongoDB connection URI (replace with your actual credentials if needed)
-mongo_uri = "mongodb+srv://hitesh21csu389:8d2Ek2vrQq5sjwER@lawmitra10.dnbpt.mongodb.net/test"
+mongo_uri = os.getenv("MONGO_URI")
 
 # Connect to MongoDB
 client = MongoClient(mongo_uri)
@@ -66,7 +69,7 @@ def generate_fake_lawyer(i):
         "references": fake.paragraph(nb_sentences=2),
         "documentUrl": fake.image_url(),  # Placeholder URL
         "status": "approved",
-        "submittedAt": datetime.now()
+        "submittedAtt": datetime.now()
     }
     return lawyer
 
