@@ -16,8 +16,8 @@ import UserLogin from "./pages/UserLogin";
 import UserSignUp from "./pages/UserSignUp";
 import LawyerLogin from "./pages/LawyerLogin";
 import LawyerSignUp from "./pages/LawyerSignUp";
-import LawyerVerification from "./pages/LawyerVerification"; 
-import TimerPage from "./pages/TimerPage"; 
+import LawyerVerification from "./pages/LawyerVerification";
+import TimerPage from "./pages/TimerPage";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -34,6 +34,7 @@ import DashboardPage from "./components/DashboardPage";
 import ChatPage from "./components/ChatPage";
 
 import LawyerRecommendation from "./pages/LawyerRecommendation";
+import DocumentUpload from "./pages/DocumentUpload"; // Import DocumentUpload component
 
 const App = () => {
   const location = useLocation();
@@ -141,7 +142,25 @@ const App = () => {
         <Route path="/safety" element={<Safety />} />
         <Route path="/termsofuse" element={<TermsOfUse />} />
 
-        <Route path="/recommendations" element={<LawyerRecommendation />} />
+
+        <Route
+          path="/upload-document"
+          element={
+            <LawyerProtectWrapper>
+              <DocumentUpload />
+            </LawyerProtectWrapper>
+          }
+        />
+
+        <Route
+          path="/recommendations"
+          element={
+            <UserProtectWrapper>
+              <LawyerRecommendation />
+            </UserProtectWrapper>
+          }
+        />
+
       </Routes>
       {!hideLayout && <Footer />}
     </div>
