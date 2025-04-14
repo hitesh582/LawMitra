@@ -11,12 +11,71 @@ const LawyerSignUp = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
+  const [firstNameError, setFirstNameError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+
   const navigate = useNavigate();
 
   const { lawyer, setLawyer } = React.useContext(LawyerDataContext);
 
+  const validateEmail = (value) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(value);
+  };
+
+  // Password validation: enforce at least 6 characters, or customize the regex for a stronger policy.
+  const validatePassword = (value) => {
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    return regex.test(value);
+  };
+
+  // First name should be at least 3 characters long.
+  const validateFirstName = (value) => {
+    return value.trim().length >= 3;
+  };
+
+  const handleFirstNameChange = (e) => {
+    const value = e.target.value;
+    setFirstName(value);
+    if (!validateFirstName(value)) {
+      setFirstNameError("First name must be at least 3 characters long.");
+    } else {
+      setFirstNameError("");
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (!validateEmail(value)) {
+      setEmailError("Please enter a valid email address.");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (!validatePassword(value)) {
+      setPasswordError(
+        "Password must be at least 6 characters long, include uppercase, lowercase, number, and special character."
+      );
+    } else {
+      setPasswordError("");
+    }
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    // Prevent submission if any validation errors exist.
+    if (firstNameError || emailError || passwordError) {
+      alert("Please fix the errors in the form before submitting.");
+      return;
+    }
     const lawyerData = {
       fullName: {
         firstName: firstName,
@@ -61,7 +120,7 @@ const LawyerSignUp = () => {
               type="text"
               placeholder="First name"
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={handleFirstNameChange}
               className="bg-gray-100 rounded-lg px-4 py-2 border w-full text-lg mb-4"
             />
             <input
@@ -73,6 +132,9 @@ const LawyerSignUp = () => {
               className="bg-gray-100 rounded-lg px-4 py-2 border w-full text-lg mb-4"
             />
           </div>
+          {firstNameError && (
+            <p className="text-red-500 text-sm mt-1">{firstNameError}</p>
+          )}
 
           <h3 className="text-lg font-medium mb-2">
             What's our Lawyer's email
@@ -82,9 +144,12 @@ const LawyerSignUp = () => {
             type="email"
             placeholder="email@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             className="bg-gray-100 rounded-lg px-4 py-2 border w-full text-lg mb-4"
           />
+          {emailError && (
+            <p className="text-red-500 text-sm mb-2">{emailError}</p>
+          )}
 
           <h3 className="text-lg font-medium mb-2">Enter Password</h3>
           <input
@@ -92,9 +157,12 @@ const LawyerSignUp = () => {
             type="password"
             placeholder="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             className="bg-gray-100 rounded-lg px-4 py-2 border w-full text-lg mb-11"
           />
+          {passwordError && (
+            <p className="text-red-500 text-sm mb-2">{passwordError}</p>
+          )}
 
           <button
             type="submit"

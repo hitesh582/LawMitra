@@ -9,12 +9,55 @@ const UserLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userData, setUserData] = useState({});
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   const { user, setUser } = useContext(UserDataContext);
   const navigate = useNavigate();
 
+   // Email must follow a basic valid email structure
+   const validateEmail = (value) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(value);
+  };
+
+  // Password should be at least 6 characters long and include uppercase, lowercase, a digit, and a special character
+  const validatePassword = (value) => {
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    return regex.test(value);
+  };
+
+  // Handler to validate and update email
+  const handleEmailChange = (e) => {
+    const value = e.target.value;
+    setEmail(value);
+    if (!validateEmail(value)) {
+      setEmailError("Please enter a valid email address.");
+    } else {
+      setEmailError("");
+    }
+  };
+
+  // Handler to validate and update password
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (!validatePassword(value)) {
+      setPasswordError(
+        "Password must be at least 6 characters long, include uppercase, lowercase, number, and special character."
+      );
+    } else {
+      setPasswordError("");
+    }
+  };
+
   const submitHandler = async (e) => {
     e.preventDefault();
+
+    if (emailError || passwordError) {
+      alert("Please fix the errors in the form before submitting.");
+      return;
+    }
 
     const userData = {
       email: email,
@@ -53,21 +96,23 @@ const UserLogin = () => {
           <input
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
             type="email"
             placeholder="email@example.com"
             className="bg-gray-100 mb-4 rounded-lg px-4 py-2 border w-full text-lg"
           />
+          {emailError && <p className="text-red-500 text-sm mb-2">{emailError}</p>}
 
           <h3 className="text-lg font-medium mb-2">Enter Password</h3>
           <input
             required
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handlePasswordChange}
             type="password"
             placeholder="password"
             className="bg-gray-100 mb-4 rounded-lg px-4 py-2 border w-full text-lg"
           />
+          {passwordError && <p className="text-red-500 text-sm mb-2">{passwordError}</p>}
 
           <button
             type="submit"
