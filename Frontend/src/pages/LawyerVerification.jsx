@@ -44,157 +44,220 @@ const LawyerVerification = () => {
     references: "",
     documentUrl: "",
   });
-
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const ikUploadRef = useRef(null);
+  const currentYear = new Date().getFullYear();
 
-  // Validation helper
-  const validateForm = () => {
-    let isValid = true;
-    const newErrors = {};
-
-    // Full Name
-    if (formData.fullName.trim() === "") {
-      newErrors.fullName = "Full Name is required.";
-      isValid = false;
-    } else if (formData.fullName.trim().split(" ").length < 2) {
-      newErrors.fullName = "Please enter your full name (first and last name).";
-      isValid = false;
-    }
-
-    // Date of Birth
-    if (!formData.dateOfBirth) {
-      newErrors.dateOfBirth = "Date of Birth is required.";
-      isValid = false;
-    } else {
-      const dob = new Date(formData.dateOfBirth);
-      const ageDiffMs = Date.now() - dob.getTime();
-      const ageDate = new Date(ageDiffMs);
-      const age = Math.abs(ageDate.getUTCFullYear() - 1970);
-      if (age < 18) {
-        newErrors.dateOfBirth = "You must be at least 18 years old.";
-        isValid = false;
-      }
-    }
-
-    // Phone
-    if (formData.phone.trim() === "") {
-      newErrors.phone = "Phone number is required.";
-      isValid = false;
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      newErrors.phone = "Phone number must be exactly 10 digits.";
-      isValid = false;
-    }
-
-    // Email
-    if (formData.email.trim() === "") {
-      newErrors.email = "Email is required.";
-      isValid = false;
-    } else if (
-      !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(formData.email)
-    ) {
-      newErrors.email = "Please enter a valid email address.";
-      isValid = false;
-    }
-
-    // Address
-    if (formData.address.trim() === "") {
-      newErrors.address = "Address is required.";
-      isValid = false;
-    }
-
-    // Bar License Number
-    if (formData.barLicenseNumber.trim() === "") {
-      newErrors.barLicenseNumber = "Bar License Number is required.";
-      isValid = false;
-    }
-
-    // State Registration
-    if (formData.stateRegistration.trim() === "") {
-      newErrors.stateRegistration = "State Registration is required.";
-      isValid = false;
-    }
-
-    // License Issued & Expiry
-    if (!formData.licenseIssued) {
-      newErrors.licenseIssued = "License Issued Date is required.";
-      isValid = false;
-    }
-    if (!formData.licenseExpiry) {
-      newErrors.licenseExpiry = "License Expiry Date is required.";
-      isValid = false;
-    } else if (
-      formData.licenseIssued &&
-      new Date(formData.licenseExpiry) < new Date(formData.licenseIssued)
-    ) {
-      newErrors.licenseExpiry =
-        "License expiry must be later than the issued date.";
-      isValid = false;
-    }
-
-    // Law Firm
-    if (formData.lawFirm.trim() === "") {
-      newErrors.lawFirm = "Law Firm is required.";
-      isValid = false;
-    }
-
-    // Law School
-    if (formData.lawSchool.trim() === "") {
-      newErrors.lawSchool = "Law School is required.";
-      isValid = false;
-    }
-
-    // Graduation Year
-    const currentYear = new Date().getFullYear();
-    if (!formData.graduationYear) {
-      newErrors.graduationYear = "Graduation Year is required.";
-      isValid = false;
-    } else if (
-      formData.graduationYear < 1900 ||
-      formData.graduationYear > currentYear
-    ) {
-      newErrors.graduationYear = "Enter a valid graduation year.";
-      isValid = false;
-    }
-
-    // Experience
-    if (formData.experience === "") {
-      newErrors.experience = "Years of experience is required.";
-      isValid = false;
-    } else if (formData.experience < 0 || formData.experience > 50) {
-      newErrors.experience = "Enter a valid number of years (0-50).";
-      isValid = false;
-    }
-
-    // Specialization
-    if (formData.specialization.trim() === "") {
-      newErrors.specialization = "Please select a specialization.";
-      isValid = false;
-    }
-
-    // Bio
-    if (formData.bio.trim() === "") {
-      newErrors.bio = "Professional bio is required.";
-      isValid = false;
-    }
-
-    // Document Upload
-    if (!formData.documentUrl) {
-      newErrors.documentUrl = "Please upload your verification document.";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
+  const parseDate = (dateStr) => {
+    const [day, month, year] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day); // JS Date: month is 0-indexed.
   };
 
+  // Instant Field Validation - returns an error message (if any) for the given field.
+  const validateField = (name, value) => {
+    let error = "";
+
+    switch (name) {
+      case "fullName":
+        if (value.trim() === "") {
+          error = "Full Name is required.";
+        } else if (value.trim().split(" ").length < 2) {
+          error = "Please enter your full name (first and last name).";
+        }
+        break;
+      case "dateOfBirth":
+        if (!value) {
+          error = "Date of Birth is required.";
+        } else {
+          // Enforce the proper format
+          const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+          if (!dateRegex.test(value)) {
+            error = "Date must be in the format DD-MM-YYYY.";
+          } else {
+            const dob = new Date(value);
+            if (isNaN(dob.getTime())) {
+              error = "Invalid date provided.";
+            } else {
+              const year = dob.getFullYear();
+              if (year < 1900) {
+                error = "Year must be 1900 or later.";
+              } else if (dob > new Date()) {
+                error = "Date of birth cannot be in the future.";
+              } else {
+                // Calculate age and check if the person is at least 18
+                const ageDiffMs = Date.now() - dob.getTime();
+                const ageDate = new Date(ageDiffMs);
+                const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+                if (age < 18) {
+                  error = "You must be at least 18 years old.";
+                }
+              }
+            }
+          }
+        }
+        break;
+
+      case "phone":
+        if (value.trim() === "") {
+          error = "Phone number is required.";
+        } else if (!/^\d{10}$/.test(value)) {
+          error = "Phone number must be exactly 10 digits.";
+        }
+        break;
+      case "email":
+        if (value.trim() === "") {
+          error = "Email is required.";
+        } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)) {
+          error = "Please enter a valid email address.";
+        }
+        break;
+      case "address":
+        if (value.trim() === "") {
+          error = "Address is required.";
+        }
+        break;
+      case "barLicenseNumber":
+        if (value.trim() === "") {
+          error = "Bar License Number is required.";
+        }
+        break;
+      case "stateRegistration":
+        if (value.trim() === "") {
+          error = "State Registration is required.";
+        }
+        break;
+      case "licenseIssued":
+        if (!value) {
+          error = "License Issued Date is required.";
+        } else {
+          const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+          if (!dateRegex.test(value)) {
+            error = "Date must be in the format DD-MM-YYYY.";
+          } else {
+            const issued = parseDate(value);
+            if (isNaN(issued.getTime())) {
+              error = "Invalid date provided.";
+            } else if (issued > new Date()) {
+              error = "License issued date cannot be in the future.";
+            }
+          }
+        }
+        break;
+
+      case "licenseExpiry":
+        if (!value) {
+          error = "License Expiry Date is required.";
+        } else {
+          const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
+          if (!dateRegex.test(value)) {
+            error = "Date must be in the format DD-MM-YYYY.";
+          } else {
+            const expiry = parseDate(value);
+            if (isNaN(expiry.getTime())) {
+              error = "Invalid date provided.";
+            } else if (formData.licenseIssued) {
+              const issued = parseDate(formData.licenseIssued);
+              if (isNaN(issued.getTime())) {
+                error = "Invalid License Issued Date.";
+              } else if (expiry <= issued) {
+                error = "License expiry must be later than the issued date.";
+              }
+            }
+          }
+        }
+        break;
+
+      case "lawFirm":
+        if (value.trim() === "") {
+          error = "Law Firm is required.";
+        }
+        break;
+      case "lawSchool":
+        if (value.trim() === "") {
+          error = "Law School is required.";
+        }
+        break;
+      case "graduationYear":
+        if (!value) {
+          error = "Graduation Year is required.";
+        } else if (value < 1900 || value > currentYear) {
+          error = "Enter a valid graduation year.";
+        } else if (formData.experience !== "" && !errors.experience) {
+          // If experience is provided, check graduation year versus experience.
+          const exp = parseInt(formData.experience, 10);
+          const gradYear = parseInt(value, 10);
+          if (gradYear > currentYear - exp) {
+            error = `Graduation year must be ${
+              currentYear - exp
+            } or before, given ${exp} years of experience.`;
+          }
+        }
+        break;
+      case "experience":
+        if (value === "") {
+          error = "Years of experience is required.";
+        } else if (value < 0 || value > 50) {
+          error = "Enter a valid number of years (0-50).";
+        } else if (formData.graduationYear && !errors.graduationYear) {
+          // Check graduation year against experience.
+          const exp = parseInt(value, 10);
+          const gradYear = parseInt(formData.graduationYear, 10);
+          if (gradYear > currentYear - exp) {
+            error = `Graduation year must be ${
+              currentYear - exp
+            } or before, given ${exp} years of experience.`;
+          }
+        }
+        break;
+      case "specialization":
+        if (value.trim() === "") {
+          error = "Please select a specialization.";
+        }
+        break;
+      case "bio":
+        if (value.trim() === "") {
+          error = "Professional bio is required.";
+        }
+        break;
+      case "documentUrl":
+        if (!value) {
+          error = "Please upload your verification document.";
+        }
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
+  // Handle change and validate instantly.
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Update form data.
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    // Optional: clear error message as the field is being updated.
-    if (errors[name]) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
+
+    // Validate current field.
+    const fieldError = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: fieldError }));
+
+    // Special consideration:
+    // If "experience" or "graduationYear" is updated, revalidate both.
+    if (name === "experience" || name === "graduationYear") {
+      const expError = validateField(
+        "experience",
+        name === "experience" ? value : formData.experience
+      );
+      const gradError = validateField(
+        "graduationYear",
+        name === "graduationYear" ? value : formData.graduationYear
+      );
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        experience: expError,
+        graduationYear: gradError,
+      }));
     }
   };
 
@@ -206,12 +269,28 @@ const LawyerVerification = () => {
     console.log("Upload success:", res);
     const fullUrl = urlEndpoint + res.filePath;
     setFormData((prevData) => ({ ...prevData, documentUrl: fullUrl }));
+    // Validate documentUrl instantly upon upload.
+    setErrors((prevErrors) => ({ ...prevErrors, documentUrl: "" }));
+  };
+
+  // Final check before submission: revalidate all fields.
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {};
+    Object.entries(formData).forEach(([name, value]) => {
+      const errMsg = validateField(name, value);
+      if (errMsg) {
+        newErrors[name] = errMsg;
+        isValid = false;
+      }
+    });
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate form fields before submission.
     if (!validateForm()) {
       return;
     }
@@ -261,14 +340,18 @@ const LawyerVerification = () => {
             <div>
               <input
                 name="dateOfBirth"
-                type="date"
+                type="date" // now text so invalid strings can be captured
                 required
                 value={formData.dateOfBirth}
                 onChange={handleChange}
+                placeholder="DD-MM-YYYY"
                 className="w-full border rounded px-3 py-2"
               />
+
               {errors.dateOfBirth && (
-                <span className="text-red-500 text-sm">{errors.dateOfBirth}</span>
+                <span className="text-red-500 text-sm">
+                  {errors.dateOfBirth}
+                </span>
               )}
             </div>
             <div>
@@ -353,10 +436,11 @@ const LawyerVerification = () => {
             <div>
               <input
                 name="licenseIssued"
-                type="date"
+                type="text"
                 required
                 value={formData.licenseIssued}
                 onChange={handleChange}
+                placeholder="License Expiry Date" // Updated placeholder
                 className="w-full border rounded px-3 py-2"
               />
               {errors.licenseIssued && (
@@ -368,10 +452,11 @@ const LawyerVerification = () => {
             <div>
               <input
                 name="licenseExpiry"
-                type="date"
+                type="text"
                 required
                 value={formData.licenseExpiry}
                 onChange={handleChange}
+                placeholder="License Expiry Date" // Updated placeholder
                 className="w-full border rounded px-3 py-2"
               />
               {errors.licenseExpiry && (
@@ -398,9 +483,7 @@ const LawyerVerification = () => {
 
         {/* Education & Experience */}
         <div className="bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-semibold mb-4">
-            Education & Experience
-          </h3>
+          <h3 className="text-xl font-semibold mb-4">Education & Experience</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <input
@@ -475,9 +558,7 @@ const LawyerVerification = () => {
 
         {/* Additional Information & Document Upload */}
         <div className="bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-semibold mb-4">
-            Additional Information
-          </h3>
+          <h3 className="text-xl font-semibold mb-4">Additional Information</h3>
           <div>
             <textarea
               name="bio"
