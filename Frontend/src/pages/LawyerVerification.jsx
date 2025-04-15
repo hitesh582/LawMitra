@@ -440,7 +440,7 @@ const LawyerVerification = () => {
                 required
                 value={formData.licenseIssued}
                 onChange={handleChange}
-                placeholder="License Expiry Date" // Updated placeholder
+                placeholder="License Issued Date" // Updated placeholder
                 className="w-full border rounded px-3 py-2"
               />
               {errors.licenseIssued && (
