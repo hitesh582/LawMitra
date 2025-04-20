@@ -51,39 +51,46 @@ const ApprovedLawyers = ({ token }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Approved Lawyers</h2>
-      {approvedLawyers.length === 0 ? (
-        <p>No approved lawyers found.</p>
-      ) : (
-        approvedLawyers.map((lawyer) => (
-          <div key={lawyer._id} className="border p-4 mb-3 rounded">
-            <p>
-              <strong>Name:</strong> {lawyer.fullName}
-            </p>
-            <p>
-              <strong>Email:</strong> {lawyer.email}
-            </p>
-            <p>
-              <strong>Phone:</strong> {lawyer.phone}
-            </p>
-            {/* Include additional details as required */}
-            <Link
-              to={`/approved-lawyers/${lawyer._id}`}
-              className="text-blue-500 hover:underline"
-            >
-              View Details
-            </Link>
+      <h2 className="text-2xl font-bold mb-4 text-black">Approved Lawyers</h2>
+      <div
+        className={`${
+          approvedLawyers.length > 4 ? "max-h-[600px] overflow-y-auto" : ""
+        }`}
+      >
+        {approvedLawyers.length === 0 ? (
+          <p>No approved lawyers found.</p>
+        ) : (
+          approvedLawyers.map((lawyer) => (
+            <div key={lawyer._id} className="border p-4 mb-3 rounded text-black">
+              <p>
+                <strong>Name:</strong> {lawyer.fullName}
+              </p>
+              <p>
+                <strong>Email:</strong> {lawyer.email}
+              </p>
+              <p>
+                <strong>Phone:</strong> {lawyer.phone}
+              </p>
+              {/* Include additional details as required */}
+              <Link
+                to={`/approved-lawyers/${lawyer._id}`}
+              ><span className="text-blue-500" >
+                View Details
+              </span>
 
-            {/* New Delete Button */}
-            <button
-              onClick={() => deleteApprovedLawyer(lawyer._id)}
-              className="bg-red-500 text-white px-4 py-1 rounded ml-10"
-            >
-              Delete
-            </button>
-          </div>
-        ))
-      )}
+              </Link>
+
+              {/* New Delete Button */}
+              <button
+                onClick={() => deleteApprovedLawyer(lawyer._id)}
+                className="bg-black text-white px-4 py-1 rounded-4xl ml-4 mt-4 cursor-pointer hover:bg-gray-800"
+              >
+                Delete
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

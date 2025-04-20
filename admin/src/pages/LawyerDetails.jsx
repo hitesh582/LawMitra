@@ -44,11 +44,11 @@ const LawyerDetails = ({ token }) => {
 
   return (
     <div className="p-6">
-      <Link to={backLink} className="text-blue-500 hover:underline">
-        &larr; {backText}
+      <Link to={backLink} className="text-blue-500 ">
+         {backText}
       </Link>
-      <h2 className="text-2xl font-bold my-4">Lawyer Details</h2>
-      <div className="border p-4 rounded shadow">
+      <h2 className="text-2xl font-bold my-6 text-black">Lawyer Details</h2>
+      <div className="border p-4 rounded shadow text-black">
         <p>
           <strong>Name:</strong> {lawyer.fullName}
         </p>
@@ -110,7 +110,7 @@ const LawyerDetails = ({ token }) => {
               href={lawyer.documentUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
+              className="text-blue-500 "
             >
               View Document
             </a>
