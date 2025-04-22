@@ -39,6 +39,7 @@ import bulb_icon from './bulb_icon.png'
 import code_icon from './code_icon.png'
 import compass_icon from './compass_icon.png'
 import message_icon from './message_icon.png'
+import verifyicon from './verifyicon.png'
 
 export const assets = {
     logo,
@@ -82,4 +83,5 @@ export const assets = {
     code_icon,
     compass_icon,
     message_icon,
+    verifyicon,
 }   

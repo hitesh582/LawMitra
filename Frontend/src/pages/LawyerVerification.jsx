@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IKContext, IKUpload } from "imagekitio-react";
+import { motion } from "framer-motion";
 import { assets } from "../assets/assets";
 
 const urlEndpoint = import.meta.env.VITE_IMAGE_KIT_ENDPOINT;
@@ -51,10 +52,9 @@ const LawyerVerification = () => {
 
   const parseDate = (dateStr) => {
     const [day, month, year] = dateStr.split("-").map(Number);
-    return new Date(year, month - 1, day); // JS Date: month is 0-indexed.
+    return new Date(year, month - 1, day);
   };
 
-  // Instant Field Validation - returns an error message (if any) for the given field.
   const validateField = (name, value) => {
     let error = "";
 
@@ -231,19 +231,11 @@ const LawyerVerification = () => {
     return error;
   };
 
-  // Handle change and validate instantly.
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Update form data.
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-
-    // Validate current field.
     const fieldError = validateField(name, value);
     setErrors((prevErrors) => ({ ...prevErrors, [name]: fieldError }));
-
-    // Special consideration:
-    // If "experience" or "graduationYear" is updated, revalidate both.
     if (name === "experience" || name === "graduationYear") {
       const expError = validateField(
         "experience",
@@ -261,19 +253,13 @@ const LawyerVerification = () => {
     }
   };
 
-  const onError = (err) => {
-    console.error("Upload error:", err);
-  };
-
+  const onError = (err) => console.error("Upload error:", err);
   const onSuccess = (res) => {
-    console.log("Upload success:", res);
     const fullUrl = urlEndpoint + res.filePath;
     setFormData((prevData) => ({ ...prevData, documentUrl: fullUrl }));
-    // Validate documentUrl instantly upon upload.
     setErrors((prevErrors) => ({ ...prevErrors, documentUrl: "" }));
   };
 
-  // Final check before submission: revalidate all fields.
   const validateForm = () => {
     let isValid = true;
     const newErrors = {};
@@ -290,20 +276,12 @@ const LawyerVerification = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/lawyers/submit-verification`,
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("lawyer-token")}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("lawyer-token")}` } }
       );
       if (response.status === 200 || response.status === 201) {
         navigate("/timerpage");
@@ -315,13 +293,28 @@ const LawyerVerification = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h2 className="text-3xl font-bold mb-6 text-center">
-        Lawyer Verification Form
-      </h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Personal Information */}
-        <div className="bg-white p-6 rounded shadow">
+    <motion.div
+      className="relative h-50px bg-fixed bg-no-repeat bg-cover bg-center flex items-center justify-center p-6 mt-0.5"
+      style={{
+        backgroundImage: `url('${assets.Rectangle}')`,
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      <motion.div
+        className="bg-white bg-opacity-90 rounded-2xl shadow-xl w-full max-w-4xl p-8 backdrop-blur-sm"
+        initial={{ scale: 0.9, y: 20, opacity: 0 }}
+        animate={{ scale: 1, y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+          Lawyer Verification Form
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* ... all existing form sections unchanged ... */}
+                  {/* Personal Information */}
+        <div className="bg-white p-6 rounded-2xl shadow-xl">
           <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -398,7 +391,7 @@ const LawyerVerification = () => {
         </div>
 
         {/* Professional Credentials */}
-        <div className="bg-white p-6 rounded shadow">
+        <div className="bg-white p-6 rounded-2xl shadow-xl">
           <h3 className="text-xl font-semibold mb-4">
             Professional Credentials
           </h3>
@@ -482,7 +475,7 @@ const LawyerVerification = () => {
         </div>
 
         {/* Education & Experience */}
-        <div className="bg-white p-6 rounded shadow">
+        <div className="bg-white p-6 rounded-2xl shadow-xl">
           <h3 className="text-xl font-semibold mb-4">Education & Experience</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -557,7 +550,7 @@ const LawyerVerification = () => {
         </div>
 
         {/* Additional Information & Document Upload */}
-        <div className="bg-white p-6 rounded shadow">
+        <div className="bg-white p-6 rounded-2xl shadow-xl">
           <h3 className="text-xl font-semibold mb-4">Additional Information</h3>
           <div>
             <textarea
@@ -618,19 +611,22 @@ const LawyerVerification = () => {
             )}
           </div>
         </div>
-
-        {/* Submit Button */}
-        <div className="flex justify-center">
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded"
-          >
-            Submit
-          </button>
-        </div>
-      </form>
-    </div>
+          {/* Submit Button */}
+          <div className="flex justify-center">
+            <motion.button
+              type="submit"
+              className="bg-black hover:bg-gray-700 cursor-pointer text-white font-semibold py-2 px-6 rounded-2xl shadow-md  mt-4"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Submit
+            </motion.button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
   );
 };
 
 export default LawyerVerification;
+
