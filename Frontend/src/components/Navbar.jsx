@@ -79,7 +79,7 @@ const Navbar = () => {
           </button>
 
           {dropdownOptions.length > 0 && (
-            <ul className="opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transform transition-all duration-200 origin-top-left absolute left-0 mt-2 w-64 bg-white rounded-lg shadow-xl text-black overflow-hidden">
+            <ul className="opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 transform transition-all duration-200 origin-top-left absolute left-1.5 mt-2 w-64 bg-white rounded-lg shadow-xl text-black overflow-hidden">
               {dropdownOptions.map((opt, idx) => (
                 <li key={opt.to} className={idx !== dropdownOptions.length - 1 ? '' : ''}>
                   <NavLink
