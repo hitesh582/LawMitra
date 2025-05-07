@@ -55,9 +55,8 @@ const Navbar = () => {
   return (
     <nav className="bg-black text-white p-4 flex items-center justify-between relative z-50 py-4 px-6">
       {/* Logo */}
-      <Link to="/home">
-        <img src={assets.logo} alt="Logo" className="w-36" />
-      </Link>
+
+      <img src={assets.logo} alt="Logo" className="w-36" />
 
       {/* Links */}
       <ul className="hidden sm:flex items-center space-x-10 absolute left-1/2 transform -translate-x-1/2">
