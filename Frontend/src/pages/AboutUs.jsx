@@ -35,7 +35,7 @@ const AboutUs = () => {
               <img
                 src={assets.aboutus1}
                 alt="Team discussing in a modern office"
-                className="w-full h-auto object-cover"
+                className="w-300 h-200 object-cover"
               />
             </div>
             <div className="mx-auto max-w-4xl rounded-xl overflow-hidden shadow-lg transform transition duration-500 hover:scale-105">

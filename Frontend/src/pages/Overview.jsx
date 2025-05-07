@@ -47,7 +47,7 @@ const Overview = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="mx-auto max-w-4xl rounded-xl overflow-hidden shadow-lg transform transition duration-500 hover:scale-105">
+            <div className="h-100 w-300px rounded-4xl overflow-hidden shadow-lg transform transition duration-500 hover:scale-105">
               <img
                 src={assets.overview1}
                 alt="Team discussing in a modern office"

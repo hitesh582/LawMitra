@@ -1,8 +1,10 @@
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { assets } from "../assets/assets";
 
 const ChatList = () => {
+  const [collapsed, setCollapsed] = useState(false);
   const queryClient = useQueryClient();
 
   const { isLoading, error, data } = useQuery({
@@ -28,9 +30,7 @@ const ChatList = () => {
           },
         }
       );
-      if (!response.ok) {
-        throw new Error("Error deleting chat");
-      }
+      if (!response.ok) throw new Error("Error deleting chat");
       return response.json();
     },
     onSuccess: () => {
@@ -47,75 +47,81 @@ const ChatList = () => {
   const validChats = data?.filter((chat) => chat._id && chat.title) || [];
 
   return (
-    <div className="min-h-screen inline-flex flex-col justify-between bg-[#f0f4f9] py-[25px] px-[15px] w-[300px]">
-      {/* Menu Icon */}
-      <span className="font-semibold text-xs mb-2">
-        <Link to="/dashboard">
-          <img
-            src={assets.menu_icon}
-            alt="menu"
-            className="block ml-[10px] cursor-pointer w-[30px]"
-          />
-        </Link>
-      </span>
+    <div
+      className={`min-h-screen flex flex-col justify-between transition-all duration-300 ease-in-out bg-[#f0f4f9] p-4 ${
+        collapsed ? "w-[80px] items-center" : "w-[300px]"
+      }`}
+    >
+      {/* Menu Toggle */}
+      <button onClick={() => setCollapsed((prev) => !prev)} className="mb-4">
+        <img src={assets.menu_icon} alt="menu" className="w-8 cursor-pointer" />
+      </button>
 
-      {/* New Chat Button with Reduced Margin */}
+      {/* New Chat */}
       <Link
         to="/dashboard"
-        className="mt-[5px] inline-flex items-center gap-[10px] py-[10px] px-[15px] bg-[#e6eaf1] rounded-[50px] text-[14px] text-gray-500 cursor-pointer"
+        className="mt-6 mb-4 flex items-center gap-2 py-2 px-4 bg-[#e6eaf1] rounded-full text-gray-500 cursor-pointer"
       >
-        <img src={assets.plus_icon} alt="new chat" className="w-[20px]" />
-        <p>New Chat</p>
+        <img src={assets.plus_icon} alt="new chat" className="w-5" />
+        {!collapsed && <span>New Chat</span>}
       </Link>
 
-      <p className="mt-[5px] mb-[5px] ml-2.5 text-gray-600 font-medium">
-        Recent
-      </p>
+      {/* Recent Section */}
+      {!collapsed && (
+        <>
+          <p className="mt-6 ml-2 mb-2 text-gray-600 font-medium">Recent</p>
+          <div className="flex-1 ml-2 overflow-y-auto  max-h-[300px] pr-2">
+            {isLoading ? (
+              <p className="text-gray-500">Loading...</p>
+            ) : error ? (
+              <p className="text-red-500">Something went wrong</p>
+            ) : validChats.length > 0 ? (
+              validChats.map((chat) => (
+                <div
+                  key={chat._id}
+                  className="flex items-center justify-between p-2 rounded-full hover:bg-[#e2e6eb] transition-colors"
+                >
+                  <Link
+                    to={`/dashboard/chats/${chat._id}`}
+                    className="flex-1 truncate"
+                  >
+                    {chat.title.slice(0, 19)}
+                  </Link>
+                  <button onClick={() => handleDelete(chat._id)}>
+                    <img
+                      src={assets.delete_icon}
+                      alt="delete"
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm">No recent chats</p>
+            )}
+          </div>
+        </>
+      )}
 
-      {/* Scrollable Chat List */}
-      <div className="flex flex-col overflow-y-auto max-h-[300px] pr-2">
-        {isLoading ? (
-          <p className="text-gray-500">Loading...</p>
-        ) : error ? (
-          <p className="text-red-500">Something went wrong</p>
-        ) : validChats.length > 0 ? (
-          validChats.map((chat) => (
-            <div
-              key={chat._id}
-              className="flex items-start gap-[10px] p-[10px] pr-[40px] rounded-[50px] text-[#282828] cursor-pointer hover:bg-[#e2e6eb] transition-colors"
-            >
-              <Link to={`/dashboard/chats/${chat._id}`} className="flex-1 ml-1">
-                {chat.title.slice(0, 19)}
-              </Link>
-              <button onClick={() => handleDelete(chat._id)} className="ml-8">
-                <img
-                  src={assets.delete_icon}
-                  alt="delete"
-                  className="w-4 h-4 mt-1 cursor-pointer"
-                />
-              </button>
-            </div>
-          ))
-        ) : (
-          <span className="text-gray-500 text-sm ml-3">No recent chats</span>
-        )}
-      </div>
-
-      {/* Fixed Bottom Section */}
-      <div className="flex flex-col mt-5">
-        <div className="flex items-start gap-[10px] p-[10px] pr-[40px] rounded-[50px] text-[#282828] cursor-pointer hover:bg-[#e2e6eb] transition-colors">
-          <img src={assets.question_icon} alt="help" className="w-[20px]" />
-          <p>Help</p>
+      {/* Bottom Menu */}
+      <Link
+        to="/termsofuse"
+      >
+        <div className="mt-4 mb-4 w-full cursor-pointer">
+          <div className="flex items-center gap-2 p-2 rounded-full hover:bg-[#e2e6eb] transition-colors">
+            <img src={assets.question_icon} alt="help" className="w-5" />
+            {!collapsed && <span>Help</span>}
+          </div>
+          <div className="flex items-center gap-2 p-2 rounded-full hover:bg-[#e2e6eb] transition-colors mt-2">
+            <img src={assets.history_icon} alt="history" className="w-5" />
+            {!collapsed && <span>Activity</span>}
+          </div>
+          <div className="flex items-center gap-2 p-2 rounded-full hover:bg-[#e2e6eb] transition-colors mt-2">
+            <img src={assets.setting_icon} alt="settings" className="w-5" />
+            {!collapsed && <span>Settings</span>}
+          </div>
         </div>
-        <div className="flex items-start gap-[10px] p-[10px] pr-[40px] rounded-[50px] text-[#282828] cursor-pointer hover:bg-[#e2e6eb] transition-colors">
-          <img src={assets.history_icon} alt="history" className="w-[20px]" />
-          <p>Activity</p>
-        </div>
-        <div className="flex items-start gap-[10px] p-[10px] pr-[40px] rounded-[50px] text-[#282828] cursor-pointer hover:bg-[#e2e6eb] transition-colors">
-          <img src={assets.setting_icon} alt="settings" className="w-[20px]" />
-          <p>Settings</p>
-        </div>
-      </div>
+      </Link>
     </div>
   );
 };
